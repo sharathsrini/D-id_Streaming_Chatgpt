@@ -39,6 +39,27 @@ async function fetchOpenAIResponse(userMessage) {
   const data = await response.json();
   return data.choices[0].message.content.trim();
 }
+
+// OpenAI API endpoint set up new 10/23 
+async function fetchGroqResponse(userMessage) {
+  console.log(userMessage)
+  const response = await fetch('http://localhost:3000/fetchGroqResponse', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      "userInput": userMessage
+    }),
+  });
+  
+  if (!response.ok) {
+    throw new Error(`OpenAI API request failed with status ${response.status}`);
+  }
+  const data = await response.json();
+  console.log(data)
+  return data;
+}
   
 //same  - No edits from Github example for this whole section
 const RTCPeerConnection = (
@@ -109,7 +130,8 @@ talkButton.onclick = async () => {
     //
     // New from Jim 10/23 -- Get the user input from the text input field get ChatGPT Response
     const userInput = document.getElementById('user-input-field').value;
-    const responseFromOpenAI = await fetchOpenAIResponse(userInput);
+    console.log(userInput);
+    const responseFromOpenAI = await fetchGroqResponse(userInput);
     //
     // Print the openAIResponse to the console
     console.log("OpenAI Response:", responseFromOpenAI);
@@ -126,7 +148,7 @@ talkButton.onclick = async () => {
           subtitles: 'false',
           provider: { type: 'microsoft', voice_id: 'en-US-ChristopherNeural' },
           ssml: false,
-          input: responseFromOpenAI  //send the openAIResponse to D-id
+          input: responseFromOpenAI.message //send the openAIResponse to D-id
         },
         config: {
           fluent: true,
